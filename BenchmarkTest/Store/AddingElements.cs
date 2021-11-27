@@ -27,7 +27,6 @@ namespace BenchmarkTest.StoreTest
         public void IterationSetup1()
         {
             this.data = null;
-            int uniqueValue = 0;
             var testUserForAddFaker = new Faker<User>()
                 .RuleFor(u => u.UserName, f => $"{f.Internet.UserName()}{Guid.NewGuid()}")
                 .RuleFor(u => u.FullName, f => f.Name.FullName())
@@ -35,14 +34,8 @@ namespace BenchmarkTest.StoreTest
             
             
             this.testUserForAdd = testUserForAddFaker.Generate(N).ToList();
-            
-            uniqueValue = 0;
-            var testUserFaker = new Faker<User>()
-                .RuleFor(u => u.UserName, f => $"{f.Internet.UserName()}{Guid.NewGuid()}")
-                .RuleFor(u => u.FullName, f => f.Name.FullName())
-                .RuleFor(u => u.City, f => f.Address.City());
 
-            var testUsers = testUserFaker.Generate(N).ToList();
+            var testUsers = testUserForAddFaker.Generate(N).ToList();
             
             Dictionary<string, User> users = testUsers.ToDictionary(x => x.UserName, x => x);
             Dictionary<string, HashSet<User>> linksCitiesForUsers = testUsers
@@ -57,7 +50,7 @@ namespace BenchmarkTest.StoreTest
         public void IterationSetup2()
         {
             this.testList = null;
-            int uniqueValue = 0;
+            
             var testUserForAddFaker = new Faker<User>()
                 .RuleFor(u => u.UserName, f => $"{f.Internet.UserName()}{Guid.NewGuid()}")
                 .RuleFor(u => u.FullName, f => f.Name.FullName())
@@ -65,14 +58,8 @@ namespace BenchmarkTest.StoreTest
             
             
             this.testUserForAdd = testUserForAddFaker.Generate(1).ToList();
-            
-            uniqueValue = 0;
-            var testUserFaker = new Faker<User>()
-                .RuleFor(u => u.UserName, f => $"{f.Internet.UserName()}{Guid.NewGuid()}")
-                .RuleFor(u => u.FullName, f => f.Name.FullName())
-                .RuleFor(u => u.City, f => f.Address.City());
 
-            var testUsers = testUserFaker.Generate(N).ToList();
+            var testUsers = testUserForAddFaker.Generate(N).ToList();
             
             this.testList = testUsers;
         }
@@ -93,7 +80,8 @@ namespace BenchmarkTest.StoreTest
         {
             foreach (var user in testUserForAdd)
             {
-                this.testList.Add(user);
+                if(!this.testList.Exists(u => u.UserName == user.UserName))
+                    this.testList.Add(user);
             }
         }
     }
